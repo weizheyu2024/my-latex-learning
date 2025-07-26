@@ -1,0 +1,500 @@
+\documentclass{ctexart}%这里使用ctexart 
+\usepackage{amsmath}
+\usepackage{amssymb}%用于斜体的大于等于
+\usepackage{comment}%用于大块注释
+\usepackage{graphicx}%用于插入图片
+\usepackage{amsthm}%用于定义定理环境
+
+\newtheorem{definition}{定义}
+\newtheorem{example}{例}
+\newtheorem{theorem}{定理}
+\title{初学群论}
+\author{魏哲宇}
+\date{2025.7.23}
+\begin{document}
+\maketitle
+\tableofcontents
+
+\section{抽象群理论——概念介绍}
+\subsection{群的定义}
+\begin{definition}
+    群是一个集合$G$和一个二元运算$\cdot$，满足以下四个条件：
+    \begin{enumerate}
+        \item 封闭性：对于任意的$a, b \in G$，都有$a \cdot b \in G$。
+        \item 结合律：对于任意的$a, b, c \in G$，都有$(a \cdot b) \cdot c = a \cdot (b \cdot c)$。
+        \item 单位元：存在一个元素$e \in G$，使得对于任意的$a \in G$，都有$e \cdot a = a \cdot e = a$。
+        \item 逆元：对于每个$a \in G$，存在一个元素$b \in G$，使得$a \cdot b = b \cdot a = e$,$b$记作$a^{-1}$。
+    \end{enumerate}
+    如果一个集合$G$和运算$\cdot$满足以上四个条件，则称$(G, \cdot)$为一个群，通常记作$G$, $G$中的元素可以是数，可以是矩阵，可以是变换。在量子力学中，群元素可以是算符。
+\end{definition}
+有了群的定义，我们可以进一步讨论群的例子
+\begin{enumerate}
+    \item \textbf{整数加法群}：集合$\mathbb{Z}$（所有整数）在加法运算下构成一个群。单位元是$0$，每个元素$a$的逆元是$-a$。
+    \item \textbf{实数去零乘法群}：集合$\mathbb{R}^*$（所有非零实数）在乘法运算下构成一个群。单位元是$1$，每个元素$a$的逆元是$a^{-1}$。
+    \item \textbf{对称群}：$n$个元素的所有排列组成的集合$S_n$，在排列的复合运算下构成一个群，称为$n$阶对称群。
+    \item \textbf{矩阵群}：所有$n\times n$可逆矩阵组成的集合$GL(n, \mathbb{R})$，在矩阵乘法下构成一个群，称为一般线性群。
+    \item \textbf{循环群}：集合$\mathbb{Z}_n = \{0,1,\ldots,n-1\}$在模$n$加法下构成一个群，称为$n$阶循环群。
+    \item \textbf{物理中的旋转群}：三维空间中所有绕原点的旋转组成的集合$SO(3)$，在旋转的复合下构成一个群，描述刚体的旋转对称性。
+    \item \textbf{平移群}：空间中所有平移组成的集合，在平移的复合下构成一个群，常用于描述晶体的平移对称性。
+    \item \textbf{洛伦兹群}：描述狭义相对论中时空变换（包括旋转和 boosts）的群，记作$O(1,3)$。
+    \item \textbf{规范群}：如$U(1)$、$SU(2)$、$SU(3)$等，在粒子物理标准模型中描述基本相互作用的对称性。
+\end{enumerate}
+在这里，我们简要介绍一下规范群的概念。规范群是描述物理系统对称性的群，特别是在量子场论中。它们通常与基本相互作用（如电磁力、弱力和强力）相关联。例如，$U(1)$描述电磁相互作用的对称性，$SU(2)$和$SU(3)$分别描述弱相互作用和强相互作用的对称性。
+简言之，规范群（gauge group）是描述物理系统局部对称性的数学结构。
+\subsection{阿贝尔群}
+\begin{definition}
+    如果一个群$G$满足对于任意的$a, b \in G$，都有$a \cdot b = b \cdot a$，则称$G$为阿贝尔群（或交换群）。  
+    也就是说，群中的元素可以任意交换顺序进行运算。
+\end{definition}
+上面的9个例子中，整数加法群、实数去零乘法群、循环群都是阿贝尔群。对称群$S_n$（$n \geq 3$）和一般线性群$GL(n, \mathbb{R})$不是阿贝尔群。
+\subsection{子群}
+\begin{definition}  
+    设$(G, \cdot)$是一个群。如果$H$是$G$的非空子集，且$H$在$G$的运算下本身也是一个群，即对于$H$中的任意$a, b$，有$a \cdot b \in H$，$H$中存在单位元，且每个元素在$H$中都有逆元，则称$H$为$G$的子群，记作$H \leq G$。
+    如果$H$是$G$的真子集（即$H \neq G$），则称$H$为$G$的真子群。
+\end{definition}   
+简而言之，一个群g中的一个子集g'称为这个群g的子群。子群保留了群的结构，即它本身也是一个群。因此，子群的性质会更好。我们举几个例子：
+\begin{enumerate}
+    \item \textbf{旋转群的子群}：三维空间的旋转群$SO(3)$有许多重要的子群。例如，绕$z$轴的所有旋转构成的子群$SO(2)$，它描述了系统关于某一固定轴的旋转对称性。
+    \item \textbf{洛伦兹群的子群}：洛伦兹群$O(1,3)$包含了旋转群$SO(3)$作为其子群，$SO(3)$描述了纯空间旋转，而$O(1,3)$还包括了boost（速度变换）。
+    \item \textbf{规范群的子群}：在粒子物理中，标准模型的规范群$SU(3)\times SU(2)\times U(1)$，其中$SU(2)$和$U(1)$分别是$SU(3)\times SU(2)\times U(1)$的子群，对应不同的基本相互作用。
+    \item \textbf{晶体的空间群与平移群}：晶体的空间群包含平移群作为子群，平移群描述了晶体结构的平移对称性。
+\end{enumerate}
+\subsection{共轭元素和类}
+\begin{definition}
+    设$G$是一个群，$a, b \in G$。如果存在一个元素$g \in G$，使得$b = g a g^{-1}$，也可以写成$b g = g a$，则称$a$和$b$是共轭的，记作$a \sim b$。在这种情况下，$g$称为将$a$变为$b$的共轭元素。共轭关系是一个等价关系，即它满足自反性、对称性和传递性。
+\end{definition}
+接下来，我们定义类：
+\begin{definition}
+    设$G$是一个群，$a \in G$。$a$的共轭类（或称为类）是指$G$中所有与$a$共轭的元素所组成的集合，记作
+    \[
+    \mathrm{Cl}(a) = \{g a g^{-1} \mid g \in G\}
+    \]
+    也就是说，$a$的共轭类包含了所有可以通过$G$中的元素对$a$做共轭变换得到的元素。群$G$可以被其所有不同的共轭类划分。
+\end{definition}
+注意，如果两个类有一个元素是相同的，那么这两个类就是相同的。也就是说，类是群中元素的一个划分。因此，我们可以将群$G$的所有元素分成若干个互不相交的类，每个类包含了所有与某个元素共轭的元素。
+
+还有一个重要的性质是，单位元素自成一类，即$\mathrm{Cl}(e) = \{e\}$，其中$e$是群$G$的单位元。除了这一个类之外，其他的类不可能形成一个子群，因为不包含单位元素。
+
+对于阿贝尔群，所有元素都是彼此共轭的，因此阿贝尔群的每个元素都自成一类。也就是说，阿贝尔群的类数等于群的阶数。
+
+\subsection{陪集}
+\begin{definition}
+    设$G$是一个群，$H$是$G$的一个子群。对于$G$中的任意元素$a \in G$，定义左陪集为
+    \[
+    aH = \{ah \mid h \in H\}
+    \]
+    也就是说，陪集$aH$是将子群$H$中的每个元素都与$a$相乘得到的集合。
+\end{definition}
+如果a不属于H，显然它生成的左陪集不形成一个子群，因为在这个左陪集中不包含单位元素。
+我们现在证明，如果两个左陪集aH和bH有一个元素相等，那么两个陪集的元素是完全相同的。
+\begin{proof}
+    假设$aH$ \text{,} $bH$中有一个元素相同，则不妨假设$a h_i = b h_j$
+    则有
+    \[
+    a = bh_jh_i^{-1}
+    \]
+    因此，左陪集中的任何元素$a h_k$都有：
+    \[a h_k = b h_jh_i^{-1}h_k\]
+    说明$a h_k \in bH$，由对称性可知，$aH = bH$
+\end{proof}
+这样的左陪集的性质说明了左陪集是群$G$的一个划分。也就是说，群$G$可以被划分为若干个互不相交的左陪集，每个左陪集都是$H$在$G$中的一个代表。同样的方法我们可以定义右陪集，并且讨论右陪集的性质。
+如果g是有限群，它的阶是h，那么它的子群$g_1$也是有限群，令$g_1$的阶为l，则所有左陪集包含的元素数目都相等。显然，$g$的所有元素可以分成不同的左陪集。
+\subsection{陪集分解，子群对于群的指数与拉格朗日定理}
+\begin{definition}
+    设$G$是一个群，$H$是$G$的一个子群。$H$在$G$中的指数，记作$[G : H]$，是指$H$在$G$中的左陪集（left cosets）的数量。
+\end{definition}
+我们来证明所有左陪集元素数目相等
+\begin{proof}
+    考虑映射 $\varphi: H \to gH$，定义为：
+    \[
+        \varphi(h) = gh, \quad \forall h \in H.
+    \]
+    我们将证明 $\varphi$ 是一个双射（即单射和满射），从而说明 $H$ 和 $gH$ 的元素一一对应，因此大小相同。
+    \begin{enumerate}
+        \item \textbf{单射性}：假设 $\varphi(h_1) = \varphi(h_2)$，即 $gh_1 = gh_2$。两边同时左乘 $g^{-1}$，得到 $h_1 = h_2$，因此 $\varphi$ 是单射。
+        \item \textbf{满射性}：对于任意 $x \in gH$，存在 $h \in H$ 使得 $x = gh$。因此 $\varphi$ 是满射。
+    \end{enumerate}
+    由于 $\varphi$ 是双射，因此 $|H| = |gH|$。
+\end{proof}
+这个定理有什么用处, 这是证明拉格朗日定理的基础。\\
+\textbf{关键点}：
+\begin{itemize}
+    \item \textbf{群的性质}：这个证明依赖于群的公理，特别是逆元的存在和消去律（左消去律：如果 $ga = gb$，则 $a = b$）。
+    \item \textbf{一般性}：这个结论不仅适用于有限群，也适用于无限群（在无限群中，我们使用集合的等势概念，即存在双射）。
+    \item \textbf{应用}：这个性质是拉格朗日定理的基础。如果 $G$ 是有限群，则 $|G| = [G : H] \times |H|$，其中 $[G : H]$ 是左陪集的数量（称为指数），这要求所有左陪集大小相同。
+\end{itemize}
+我们举个例子来说明这个定理的应用：
+\begin{example}
+    设群$G = \mathbb{Z}_6 = \{0,1,2,3,4,5\}$，运算为模6加法。取子群$H = \{0,3\}$。$H$的所有左陪集为：
+    \[
+    0+H = \{0,3\},\quad 1+H = \{1,4\},\quad 2+H = \{2,5\}
+    \]
+    一共3个左陪集，每个陪集有2个元素。$|G| = 6, |H| = 2, [G:H] = 3$，满足$|G| = [G:H] \times |H|$。
+\end{example}
+\begin{theorem}
+    \textbf{拉格朗日定理}：设 $G$ 是一个有限群，$H$ 是 $G$ 的子群，则
+    \[
+        |G| = [G : H] \times |H|
+    \]
+    其中 $|G|$ 是群 $G$ 的阶（元素个数），$|H|$ 是子群 $H$ 的阶，$[G : H]$ 是 $H$ 在 $G$ 中的指数（即左陪集的个数）。
+\end{theorem}
+我们现在来证明这个定理
+\begin{proof}
+    \textbf{陪集分解}：
+
+    群 $G$ 可以分解为互不相交的左陪集的并集。即，存在元素 $g_1, g_2, \ldots, g_k \in G$（称为陪集代表元），使得：
+    \[
+        G = g_1 H \cup g_2 H \cup \cdots \cup g_k H
+    \]
+
+    且 $g_i H \cap g_j H = \varnothing$ 对于所有 $i \neq j$。
+
+    这里，$k = [G : H]$，即 $H$ 在 $G$ 中的指数（陪集个数）。
+
+    \textbf{每个左陪集大小相同}：
+
+    对于任意 $g \in G$，左陪集 $gH$ 的元素个数等于 $|H|$。
+
+    考虑映射 $\varphi: H \to gH$，定义为 $\varphi(h) = gh$。
+
+    \begin{itemize}
+        \item \textbf{单射性}：若 $\varphi(h_1) = \varphi(h_2)$，即 $gh_1 = gh_2$。由于 $G$ 是群，左乘 $g^{-1}$ 得 $h_1 = h_2$，故 $\varphi$ 是单射。
+        \item \textbf{满射性}：对任意 $y \in gH$，存在 $h \in H$ 使得 $y = gh$，即 $y = \varphi(h)$，故 $\varphi$ 是满射。
+    \end{itemize}
+
+    因此 $\varphi$ 是双射，有 $|gH| = |H|$。
+
+    \textbf{结论}：所有左陪集 $g_i H$ 的大小均为 $|H|$。
+
+计算群阶：
+
+由于 $G$ 是 $k$ 个互不相交左陪集的并集，且每个陪集大小为 $|H|$，有：
+\[
+|G| = \sum_{i=1}^k |g_i H| = \sum_{i=1}^k |H| = k \times |H|.
+\]
+
+但 $k = [G:H]$，所以：
+
+\[
+|G| = [G:H] \times |H|.
+\]
+
+证毕。
+\end{proof}
+
+\subsection{不变子群（正规子群）和商群}
+在引入不变子群和商群之前，我们先来了解一下什么是共轭子群。
+\begin{definition}
+    设$G$是一个群，$H$是$G$的一个子群。对于$G$中的任意元素$g$，集合
+    \[
+        gHg^{-1} = \{ghg^{-1} \mid h \in H\}
+    \]
+    称为$H$关于$g$的共轭子群。若$gHg^{-1} = H$对所有$g \in G$都成立，则称$H$为$G$的不变子群（或正规子群）。（请注意g是任意的）
+\end{definition}
+共轭子群有一个性质，
+不好意思，在定义共轭子群时顺便定义了不变子群。我们现在来讨论不变子群的性质。
+如果$g_1$是一个不变子群，那么左陪集$ag_1$中的元素和$cg_1$中的元素乘积的集合也是一个左陪集，并且与$acg_1$相重合。我也小小地证明一下这个性质。
+\begin{proof}   
+    \[ag_i \cdot cg_j = acg_ic^{-1}cg_j = acg_ig_j\]
+    由于$g_i$和$g_j$都是不变子群，所以$g_ig_j$也是一个不变子群。也就是说，$ag_i \cdot cg_j$仍然是一个左陪集且与$acg_1$等价。
+\end{proof}
+在有不变子群之后，我们再定义商群（Quotient Group）。
+\begin{definition}
+    设$G$是一个群，$H$是$G$的不变子群。商群$G/H$是由所有左陪集$gH$（其中$g \in G$）构成的集合，运算定义为：
+    \[
+        (g_1H) \cdot (g_2H) = (g_1 g_2) H
+    \]
+    其中 $g_1, g_2 \in G$。
+    商群$G/H$的元素称为陪集，商群的阶数为$[G : H]$，即$H$在$G$中的指数。
+\end{definition}
+我们举一个例子来说明商群的概念：
+\begin{example} 
+    以 $S_3$ 为例，$S_3$ 是 3 阶对称群，包含 6 个元素。$S_3$ 有一个非平凡的正规子群，即交错群 $A_3$，它由所有偶置换组成：
+    \[
+        A_3 = \{ e, (1\ 2\ 3), (1\ 3\ 2) \}
+    \]
+    其中 $e$ 是单位元，$(1\ 2\ 3)$ 和 $(1\ 3\ 2)$ 是 3-循环。$A_3$ 的阶为 3。
+
+    验证 $A_3$ 是正规子群：对任意 $g \in S_3$ 和 $n \in A_3$，都有 $g n g^{-1} \in A_3$。例如，取 $g = (1\ 2)$，$n = (1\ 2\ 3)$，则
+    \[
+        (1\ 2)(1\ 2\ 3)(1\ 2)^{-1} = (1\ 2)(1\ 2\ 3)(1\ 2) = (1\ 3\ 2) \in A_3
+    \]
+    其他元素也可类似验证，或由 $[S_3 : A_3] = 2$ 推出 $A_3$ 是正规子群。
+
+    因此，商群 $S_3 / A_3$ 的元素为 $A_3$ 的所有左陪集。由于 $[S_3 : A_3] = 2$，商群 $S_3 / A_3$ 共有 2 个元素，其中的元素是$(1,2)A_3\text{和}A_3$。
+\end{example}
+这里我们先不举无限群的例子，因为无限群的商群可能会比较复杂。我们可以在后续章节中讨论无限群的商群。我们再举一个线性空间（这是一种Abel群）的例子，这就是商空间。（但这是无限群，不能用有限群的Laggrange 定理）
+\subsection{群同态，同构和群表示}
+\begin{definition}
+    设$G$和$G'$是两个群，群运算分别为$\cdot$和$*$。如果映射$\varphi: G \to G'$满足对于任意$a, b \in G$，
+    \[
+        \varphi(a \cdot b) = \varphi(a) * \varphi(b)
+    \]
+    则称$\varphi$为从$G$到$G'$的群同态（group homomorphism）。
+\end{definition}
+我们称群 $G$ 同态于群 $G'$，如果 $G$ 中的每一个元素 $a$ 都对应于 $G'$ 中的一个确定的元素 $\varphi(a)$，并且 $G$ 中两个元素 $a$ 和 $b$ 的乘积 $ab$ 对应于 $G'$ 中相应元素的乘积 $\varphi(a)\varphi(b)$，即满足
+\[
+    \varphi(ab) = \varphi(a)\varphi(b)
+\]
+此外，$G$ 中的每一个元素至少对应于 $G'$ 中的一个元素。我们称 $G'$ 是 $G$ 的同态像。
+有了群同态，我们就能定义群同构。
+\begin{definition}
+    如果群同态$\varphi: G \to G'$是双射（即单射和满射），则称$\varphi$为群同构（group isomorphism），记作$G \cong G'$。在这种情况下，$G$和$G'$是同构的，意味着它们在群结构上是相同的。
+\end{definition}
+如果G和G'并不同构，但G'是G的同态映射，那么不难证明，G中的所有和G'中的单位元素对应的元素形成G中的一个不变子群。
+我们设$g_1,g_2,g_3,...$是G中与G'的单位元素对应的元素。
+因为G中的单位元素1对应于G'中的单位元素1’。取G中的元素g，对应G'中的元素g’，则有
+\[  1 g = g \quad 1'g' = g' \]
+由此可见，G中的单位元素1包含在$g_1,g_2,g_3,...$中，不难看出$g_1,g_2,g_3,...$这些元素的逆也对应于G'中的单位元素1’。
+从如下的对应来看：
+\[
+g a_1 g^{-1} = a_1' \quad g' 1' g'^{-1} = 1'
+\]
+因此，$g_1,g_2,g_3,...$形成G中的一个不变子群, 你可以先映射过去在映射回来，这个对应说明了$g_1,g_2,g_3,...$是G中的一个不变子群。
+
+不难看出，和g中某一个确定的元素相对应的g中的所有元素形成一个不变子群h的陪集．因此g中的元素和h的陪集一一对应．这也就是说，g 和商群g/h同构．这样我们就证明了如下的定理：
+
+\begin{theorem}
+    \textbf{群同构定理}：设群 $G$ 存在到群 $G'$ 的同态映射 $\varphi: G \to G'$，则 $G'$ 同构于商群 $G/H$，其中 $H$ 是 $G$ 中所有与 $G'$ 的单位元对应的元素所组成的不变子群。
+\end{theorem}
+我们可以举个例子：由偶置换形成的交换群是对称群的不变子群，其相应的商群和由1和-1组成的二阶群同构。
+
+\section{群表示的一般理论}
+\subsection{等价表示}
+如果知道群G有一个表示：和群元素$a,b,c...$相对应的矩阵$A,B,C...$，那么我们可以定义一个新的表示：和群元素$a,b,c...$相对应的矩阵$A',B',C'$。我们令这些矩阵的相似变换也是群G的表示，即
+\[A' = P^{-1}AP, B' = P^{-1}BP, C' = P^{-1}CP\]
+其中$P$是一个可逆矩阵。这样的表示称为等价表示。
+\begin{definition}
+    如果存在一个可逆矩阵$P$，使得对于群$G$的任意元素$g$，两个表示$\rho$和$\rho'$满足
+    \[
+    \rho'(g) = P^{-1} \rho(g) P
+    \]
+    则称$\rho$和$\rho'$是等价表示（equivalent representations）。
+\end{definition}
+我们理解等价表示的方法是同一套线性变换下的在不同坐标系下的不同表达式。也就是说，等价表示是通过相似变换得到的。
+\subsection{可约表示与不可约表示}
+我们从线性变换出发来介绍可约表示和不可约表示的概念。
+\subsubsection{可约表示}
+\begin{definition}
+    设在矢量空间 $R$ 中存在一组非奇异线性变换，并且这些变换构成群 $G$ 的一个表示。如果存在一个既非零也非整个空间 $R$ 的子空间 $Y$，使得对群 $G$ 的任意表示 $D(g)$，都有 $D(g)Y = Y$，即 $Y$ 在群 $G$ 的表示下保持不变，则称该表示为可约表示（reducible representation），称空间 $R$ 对于群 $G$ 是可约的，称子空间 $Y$ 为对于群 $G$ 不变的子空间。
+\end{definition}
+我们选择一个坐标系，它的基矢是$\mathbf{u_1},...,\mathbf{u_m}$, 则必然有
+\[
+\left\{
+\begin{aligned}
+    &D(g)\mathbf{u_i} = \sum_{j=1}^{m} \mathbf{u_j} p_{ji}, &&\quad i = 1,2,\ldots,m\\
+    &D(g)\mathbf{u_k} = \sum_{j=1}^{m}  \mathbf{u_j}q_{jk}+\sum_{j=m+1}^{n} \mathbf{u_j}s_{jk}, &&\quad k = m+1,\ldots,n
+\end{aligned}
+\right.
+\]
+其中A是与群元素相应的线性变换，这个矩阵有如下形式：
+\[
+A = \left(
+\begin{array}{cc}
+    P & Q \\
+    0 & S
+\end{array}
+\right)
+\]
+其中 $P$ 是 $m \times m$ 的子矩阵，作用在不变子空间 $Y$ 上；$Q$ 是 $(n-m) \times (n-m)$ 的子矩阵，作用在补空间上；$S$ 是 $m \times (n-m)$ 的矩阵，表示从补空间到 $Y$ 的作用；$0$ 是 $(n-m) \times m$ 的零矩阵，表示 $Y$ 在群作用下不变。
+
+当然，$u_m+1,...,u_n$的选择也有任意性，假如我们选择的$u_m+1,...,u_n$使$\mathbf{Q} = 0$，则又生成了一个对群G的不变子空间$Y'$，我们说将空间分成了两个不变子空间$Y$和$Y'$，这时我们就可以说群G的表示是完全可约的。并且记作
+\[
+R = Y \oplus Y'
+\]
+如果我们用原来的符号D代表群G的表示，则我们认为表示D可以分解为$D_1\text{和}D_2$,并且记作
+\[
+D = D_1 + D_2
+\]
+如果A是幺正矩阵，那么当A使子空间的Y变换为自身，则一定使与Y完全正交的子空间变换为自身。因此，如果群G的幺正表示是可约的，那么他一定是完全可约的。不难看出，分解得到的每一个表示都是幺正的。
+
+\begin{theorem}
+    如果 $A$ 是幺正矩阵，且 $A$ 将子空间 $Y$ 变换为自身（即 $A(Y) = Y$），则 $A$ 也将 $Y$ 的正交补子空间 $Y^\perp$ 变换为自身（即 $A(Y^\perp) = Y^\perp$）。
+\end{theorem}
+我们来证明这一点:
+\begin{proof}
+设 $A$ 是幺正矩阵，且 $A(Y) \subseteq Y$。由于 $A$ 可逆（$A^{-1} = A^*$），有 $A(Y) = Y$（即 $A$ 限制在 $Y$ 上是同构）。
+
+要证：对任意 $z \in Y^\perp$，有 $Az \in Y^\perp$。
+
+取任意 $z \in Y^\perp$ 和任意 $y \in Y$，需证 $\langle Az, y \rangle = 0$。
+
+因为 $A$ 是幺正矩阵，它保持内积：(最关键的一步是保证内积)
+\[
+\langle Az, y \rangle = \langle z, A^* y \rangle
+\]
+（这里用到：$\langle Au, v \rangle = \langle u, A^* v \rangle$）
+
+由于 $A(Y) = Y$ 且 $A^{-1} = A^*$，有 $A^*(Y) = Y$，即 $A^* y \in Y$ 对任意 $y \in Y$。
+
+现在，因为 $z \in Y^\perp$ 且 $A^* y \in Y$，有
+\[
+\langle z, A^* y \rangle = 0
+\]
+代入上式得
+\[
+\langle Az, y \rangle = 0
+\]
+这对所有 $y \in Y$ 成立，因此 $Az \perp Y$，即 $Az \in Y^\perp$。
+
+由于 $z \in Y^\perp$ 是任意的，故 $A(Y^\perp) \subseteq Y^\perp$。
+
+此外，因为 $A$ 可逆，实际上 $A(Y^\perp) = Y^\perp$
+\end{proof}
+\subsubsection{不可约表示}
+如果知道群G有一个表示,但是除零矢量和R自身以外，对于G没有别的子空间，那么我们称这个表示是不可约的。
+
+根据这个定义，我们可以发现群G的任何有限维幺正表示都可以分解为不可约的幺正表示之和。
+
+可以证明，每一个有限群额表示都等价于一个幺正表示，我们来证明这一点。首先，这是一个酉空间（unitary space）。设群中有N个元素为$a_1,a_2,...,a_N$，在群的一个n维的表示中对应的矩阵为$A_1,A_2,...,A_N$我们定义内积为
+\[
+\left\{
+\begin{aligned}
+\langle y, x \rangle &= \sum_{i=1}^{N}\sum_{j=1}^{n} (A_i y)_j^*(A_i x)_j = \sum_{i,j}y_ig_{ij}x_j \\
+g_{ij} = &\sum_{s=1}^{N}\sum_{k=1}^{n}a_{ki}^{(s)^*}a_{kj}^{(s)} 
+\end{aligned}
+\right.
+\]
+因此这个空间是酉空间。在这个空间中，$A_1,A_2,...,A_N$都是幺正变换。证明如下：
+\begin{proof}
+\[
+    \langle A_t y,A_t x \rangle = \sum_{i=1}^{N}\sum_{j=1}^{n} (A_i A_t y)_j^*(A_i A_t x)_j = \sum_{s=1}^{N}\sum_{k=1}^{n} (A_s y)^*(A_s x) = \langle y,x \rangle
+\]
+\end{proof}
+我们这里解释一下求和中两个A变为一个A，这是由于群的封闭性，当$A_s$遍历$A_1,A_2,...,A_N$时，$A_tA_s$也会遍历$A_1,A_2,...,A_N$。因此我们得到结论，如果有限群的一个表示是可约的，那么它就是完全可约的。
+\subsubsection{分解为不可约表示的唯一性}
+\begin{theorem}
+    如果G是一个群，在空间R中群G有一个表示D，D可以分解为一系列不可约表示:
+    \[D = D_1+D_2+\cdots + D_h\]
+    R相应地分解为一系列不变子空间：
+    \[R = Y_1+Y_2+\cdots + Y_h\]
+    而$\alpha$是R中一个不变子空间，那么证明R可以分解为
+    \[R= \alpha+Y_{\nu_1}+Y_{\nu_2}+\cdots+Y_{\nu_k}\]
+    其中，$Y_{\nu_1}，Y_{\nu_2}，\cdots，Y_{\nu_k}$是k个不可约子空间。
+\end{theorem}
+\begin{proof}
+    首先先引入并集子空间的定义:设$\alpha$和$\beta$是两个子空间，$\alpha$中任何一个矢量和$\beta$中的任何一个矢量相加可以得到一个矢量，所有这些相加而得的矢量的集合形成了一个新的子空间。这种子空间记作$\alpha$和$\beta$的并集子空间，记作$\left( \alpha , \beta \right)$
+    \[
+    \left\{
+    \begin{aligned}
+        \alpha_1 &= \left(\alpha,Y_1\right) ,\\
+        \alpha_2 &=\left(\alpha_1,Y_2\right) ,\\
+        &\vdots \\
+        \alpha_h &=\left(\alpha_{h-1},Y_h\right)
+    \end{aligned}
+    \right.
+    \]
+    我们虽然定义的并集子空间，但对于不变子空间的交是关键。显然$\alpha$和$Y_1$的交是不变子空间，但是$Y_1$是不可约的子空间，因此我们可以得到
+    \[\alpha \cap Y_1 = \{0\} \text{或} \alpha \cap Y_1 = Y_1\]
+    如果$\alpha \cap Y_1 = \{0\}$，则$\alpha$包含了$Y_1$，因此$\alpha$可以分解为
+    \[  
+    \alpha_1 = \left(\alpha,Y_1\right) = Y_1 + \alpha
+    \]
+    如果$\alpha \cap Y_1  = Y_1$，
+    则$\alpha$和$Y_1$的并集子空间是
+    \[  
+    \alpha_1 = \left(\alpha,Y_1\right) = Y_1 
+    \]
+    以此类推，我们就得到了结论。
+\end{proof}
+\begin{theorem}
+    如果一个有限维群表示可以分解为不可约表示，则在等价意义下，这种分解是唯一的。更严格地说：设$D$是群$G$的一个有限维表示，若
+    \[
+        D = m_1 D_1 + m_2 D_2 + \cdots + m_k D_k
+    \]
+    其中$D_1, D_2, \ldots, D_k$是互不等价的不可约表示，$m_i$是每个不可约表示出现的重数，则$D_1, D_2, \ldots, D_k$及各自的重数$m_i$在等价意义下唯一确定（只差于排列顺序和等价变换）。
+\end{theorem}
+\begin{theorem}[5']
+当然还有等价形式：
+\( g \) 是一个群，\( D \) 是群 \( g \) 在空间 \( R \) 中的一个表示。用一种方法，\( D \) 可以分解为一系列不可约的表示
+\[
+D = D_1 + D_2 + \cdots + D_r,
+\]
+R 相应地分解为一系列不变子空间
+\[
+R = \gamma_1 + \gamma_2 + \cdots + \gamma_r;
+\]
+用另一种方法，又可以将 \( D \) 分解为一系列不可约的表示
+\[
+D = D^{(1)} + D^{(2)} + \cdots + D^{(s)},
+\]
+R 相应地分解为一系列不变子空间
+\[
+R = \gamma^{(1)} + \gamma^{(2)} + \cdots + \gamma^{(s)}.
+\]
+那么可以证明 \( r = s \)。如果将 \( D^{(1)}, D^{(2)}, \cdots, D^{(s)} \) 按另一适当的次序排列，那么它们就和 \( D_1, D_2, \cdots, D_r \) 相对应，相互等价。将 \( \gamma^{(1)}, \gamma^{(2)}, \cdots, \gamma^{(s)} \) 按另一适当的次序排序，那么它们就和 \( \gamma_1, \gamma_2, \cdots, \gamma_r \) 一一对应，相互同构。
+\end{theorem}
+下面我们给出证明：
+\begin{proof}
+    我们令$\alpha = Y^{(2)} + Y^{(3)} + \cdots + Y^{(s)}$
+    我们可以根据定理4，将全空间分解为
+    \[R = \alpha +\sum_{i} Y_i\]
+    我们发现$Y^{(1)}$和$\sum Y_i$都同构与商空间$R/\alpha$,因此他们彼此同构。也就是说，$Y^{(1)}$和$\sum Y_i$是等价的表示。由于$Y_1$是不可约的，说明求和号中只有一项，因此：
+    \[Y^{(1)} \cong Y_1 \]
+    这时，我们有递推关系，因此，利用递推关系，我们可以得到
+    \[r = s \quad,\quad Y^{(i)} \cong Y^i \]
+\end{proof}
+我们补充一点，表示的唯一性是在给定群G和空间R下才有的性质，如果不给定空间，则分解一定不唯一！
+\subsection{表示的乘积}
+\subsubsection{群的乘积表示}
+设 \( \mathbf{u}_1, \mathbf{u}_2, \cdots, \mathbf{u}_n \) 是一套 \( n \) 维空间 \( R_n \) 中的基矢。在线性变换 \( A \) 中，基矢 \( \mathbf{u}_i \) 的映像 \( \mathbf{u}'_i \) 是
+\[
+\mathbf{u}'_i = \sum_{j=1}^n \mathbf{u}_j a_{ji}
+\]
+
+设 \( \mathbf{v}_1, \mathbf{v}_2, \cdots, \mathbf{v}_m \) 是一套 \( m \) 维空间 \( R_m \) 中的基矢。在线性变换 \( B \) 中，基矢 \( \mathbf{v}_k \) 的映像 \( \mathbf{v}'_k \) 是
+\[
+\mathbf{v}'_k = \sum_{l=1}^m \mathbf{v}_l b_{lk}
+\]
+
+我们可以定义一个 \( n \times m \) 维的空间，以 \( \mathbf{u}_i \mathbf{v}_k \) 作为其基矢，称为 \( R_n \) 和 \( R_m \) 的乘积空间。在这个乘积空间中可以引进一个线性变换，在这个线性变换中 \( \mathbf{u}_i \mathbf{v}_k \) 的映像是
+\[
+\mathbf{u}'_i \mathbf{v}'_k = \sum_{j=1}^n \sum_{l=1}^m \mathbf{u}_j \mathbf{v}_l a_{ji} b_{lk}
+\]
+
+设
+\[
+\mathbf{x} = \sum_{i=1}^n \sum_{k=1}^m c_{ik} \mathbf{u}_i \mathbf{v}_k
+\]
+那么其映像
+\[
+\mathbf{y} = \sum_{j=1}^n \sum_{l=1}^m d_{jl} \mathbf{u}_j \mathbf{v}_l = \sum_{i=1}^n \sum_{k=1}^m c_{ik} \mathbf{u}'_i \mathbf{v}'_k = \sum_{i=1}^n \sum_{k=1}^m \sum_{j=1}^n \sum_{l=1}^m c_{ik} \mathbf{u}_j \mathbf{v}_l a_{ji} b_{lk}
+\]
+
+因此有
+\[
+d_{jl} = \sum_{i=1}^n \sum_{k=1}^m a_{ji} b_{lk} c_{ik}
+\]
+或
+\[
+d_{kl} = \sum_{i=1}^n \sum_{j=1}^m a_{ji} b_{lk} c_{ik}
+\]
+
+显然，\( a_{ji} b_{lk} \) 是矩阵外积 \( A \times B \) 的矩阵元，我们称变换上述式子为乘积变换，并以符号 \( A \times B \) 表示之。
+
+我们可以这样理解这种映像：如果从$\mathbf{u_iv_j}$映射为$\mathbf{u_i'v_j'}$，那么矢量$\mathbf{x}$可以映射为$\mathbf{y}$
+
+对于一个群G而言，在空间$R_n$和$R_m$各有一个表示$D_n$和$D_m$, 其相对应的群元素a的矩阵分别为$\mathbf{A}$和$\mathbf{B}$; 那么在乘积空间中显然可以得到一个表示，相应于群元素a的矩阵为$\mathbf{A}\times \mathbf{B}$我们称这种表示为乘积表示，并利用符号$D_n\times D_m$来代表
+
+接下来有一个神奇的性质：表示$D_m\times D_n$和$D_n\times D_m$是等价的，因为他们代表一个相同的线性变换，只是基矢的排列次序有所不同。$d_{kl} = \sum_{i=1}^n \sum_{j=1}^m a_{ji} b_{lk} c_{ik}$，在调整次序时只是对矩阵进行幺正变换，因为基的变换矩阵是幺正的（只是最正常的置换矩阵）
+我们给出一个直观的理解：
+
+几何类比：想象一个二维平面，使用标准基 $\{\mathbf{e}_x, \mathbf{e}_y\}$ 或旋转后的基 $\{\mathbf{e}_y, \mathbf{e}_x\}$。同一个向量在不同基下坐标不同，但描述的是同一个几何对象。线性变换矩阵会变化，但通过基变换矩阵相联系。
+
+在群表示中：$D_m \times D_n$ 和 $D_n \times D_m$ 就像用不同“视角”（基矢顺序）观察同一个群作用。矩阵的行/列置换相当于重新标记坐标轴，不改变变换本质。
+
+用同样的方式可以定义两个以上的乘积的表示。
+
+\subsubsection{群的最简表示}
+一切的群都有一个最简单的表示，即群的每一个元素都由一维单位矩阵表示，我们称为群的单位表示。一个有趣的问题是：在什么条件下一个乘积表示中如何分解出一个单位表示。
+
+令 $D$ 和 $D'$ 分别为群 $G$ 的两个不可约表示，表示 $D$ 的空间为 $R$，其一组基矢为 $\{\mathbf{u}_1, \mathbf{u}_2, \ldots, \mathbf{u}_n\}$，表示 $D'$ 的空间为 $S$，其基矢为 $\{\mathbf{v}_1, \mathbf{v}_2, \ldots, \mathbf{v}_m\}$。乘积表示 $D \times D'$ 的 $nm$ 维空间是否包含一个单位表示，等价于 $D \times D'$ 的空间中是否存在一个不变矢量。
+
+乘积空间中的任何矢量都可以表达为
+\[
+ \mathbf{w} = \sum_{i=1}^{n}\sum_{k=1}^{m}c_{ik}\mathbf{u_i}\mathbf{v_k} =\sum_{i=1}^{n}\mathbf{u_i}\mathbf{v_i'}
+\]
+其中 \[\mathbf{v_i'} = \sum_{k=1}^{m}c_{ik}\mathbf{v_k}\]
+如果$\mathbf{w}$是一个不变矢量，那么在$D\times D'$的所有线性变换中$\mathbf{w}$都是不变的
+
+\end{document}
